@@ -28,6 +28,7 @@ class Machine:
     def resetData(self):
         self.data = self.data_orig.copy()
         self.pointer = 0
+        self.relbase = 0
 
     def updateData(self,data):
         self.data = data
@@ -47,9 +48,9 @@ class Machine:
             for inp in inputList:
                 self.inputList.append(inp)
         pointer_move = 0
-        outputList = []
         loop = True
         while loop:
+            outputList = []
             parameterList = '{0:05d}'.format(self.data[self.pointer])
             par3 = int(parameterList[0])
             par2 = int(parameterList[1])
@@ -57,7 +58,7 @@ class Machine:
             opcode = int(parameterList[3:])
             if debug: print("pointer " + str(self.pointer))
             try:
-                #print("opcode = " + str(opcode))
+                if debug: print("opcode = " + str(opcode))
                 if opcode == 1 or opcode == 2:
                     if opcode == 1:
                         operation = "+"
@@ -68,7 +69,7 @@ class Machine:
                     if debug: print("op12")
                     valList = self.getvalList(parList=[[par1,0],[par2,0],[par3,1]])
                     self.data[valList[2]] = eval(str(valList[0])+operation+str(valList[1]))
-                    pointer_move = 4
+                    self.pointer += 4
                 elif opcode == 3:
                     if debug: print("op3")
                     valList = self.getvalList(parList=[[par1,0]])                    
@@ -84,32 +85,31 @@ class Machine:
                     if len(self.inputList) == 0:
                         yield outputList
                     self.data[index3] = self.inputList.pop(0)
-                    pointer_move = 2
+                    self.pointer += 2
                 elif opcode == 4:
                     if debug: print("op4")
                     valList = self.getvalList(parList=[[par1,0]])
-                    if debug: print(valList)
                     outputList.append(valList[0])
                     self.lastOutput = valList[0]
                     #Special code#
                     #self.pointer +=2
                     yield outputList
                     ##############
-                    pointer_move = 2
+                    self.pointer += 2
                 elif opcode == 5:
                     if debug: print("op5")
                     valList = self.getvalList(parList=[[par1,0],[par2,0]])
                     if valList[0] != 0:
                         self.pointer = valList[1]
                         continue
-                    pointer_move = 3
+                    self.pointer += 3
                 elif opcode == 6:
                     if debug: print("op6")
                     valList = self.getvalList(parList=[[par1,0],[par2,0]])
                     if valList[0] == 0:
                         self.pointer = valList[1]
                         continue
-                    pointer_move = 3
+                    self.pointer += 3
                 elif opcode == 7:
                     if debug: print("op7")
                     valList = self.getvalList(parList=[[par1,0],[par2,0],[par3,1]])
@@ -117,23 +117,23 @@ class Machine:
                         self.data[valList[2]] = 1
                     else:
                         self.data[valList[2]] = 0
-                    pointer_move = 4
+                    self.pointer += 4
                 elif opcode == 8:
                     if debug: print("op8")
                     valList = self.getvalList(parList=[[par1,0],[par2,0],[par3,1]])
                     if valList[2] >= len(self.data):
-                        #print("extending memory by " + str(valList[2] - len(self.data) + 1))
+                        if debug: print("extending memory by " + str(valList[2] - len(self.data) + 1))
                         self.data = self.data + [0]*(valList[2] - len(self.data) + 1)
                     if valList[0] == valList[1]:
                         self.data[valList[2]] = 1
                     else:
                         self.data[valList[2]] = 0
-                    pointer_move = 4
+                    self.pointer += 4
                 elif opcode == 9:
                     if debug: print("op9")
                     valList = self.getvalList(parList=[[par1,0]])
                     self.relbase += valList[0]
-                    pointer_move = 2
+                    self.pointer += 2
                 elif opcode == 99:
                     if debug: print("op99")
                     loop = False
@@ -143,10 +143,9 @@ class Machine:
                     return -1
             except Exception as e:
                 print(e)
-                return outputList
-            self.pointer += pointer_move
+                yield -1
         self.resetData()
-        yield outputList
+        yield 1
     def getvalList(self, parList):
         valList = []
         for i, par in enumerate(parList):
@@ -189,11 +188,6 @@ m1 = Machine(data.copy())
 
 for x in m1.runMachine([2]):
     print(x)
-
-
-    
-
-#print(runMachine(data=data_orig.copy(),inputList = [1]))
 
 class TestMachineMethods(unittest.TestCase):
 
