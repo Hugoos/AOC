@@ -1,9 +1,18 @@
 import math
-name2 = "input/input1.txt" #pentest
-f=open(name2)
-lines=f.readlines()
+from AOCTools import *
+fileName = "input/input1.txt" #pentest
+
+lines= read_integers(fileName)
+linesSet = set(lines)
+
 for line in lines:
     for line2 in lines:
-        for line3 in lines:
-            if int(line) + int(line2) + int(line3) == 2020:
-                print(int(line)*int(line2)*int(line3))
+        if (2020 - (line + line2)) in linesSet:
+            print(str(line) + " + " + str(line2) + " + " + str(2020-line) +
+                  " together add up to 2020\nTheir product is: "
+                  + str(line * line2 * (2020-(line+line2))) + "\n")
+            break
+        
+
+
+#ans 49880012
