@@ -10,4 +10,4 @@ def read_strings(filename, deliminator = ""):
             return result
     else:    
         with open(filename) as f:
-            return [str(x) for x in f]
+            return [str(x).strip() for x in f]
