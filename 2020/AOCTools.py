@@ -37,5 +37,5 @@ def read_strings(filename, deliminator = "", vertDeliminator =""):
                         nestedResult = []
                         continue    
                     nestedResult.append(line)
-            result.append(nestedResult)
+                result.append(nestedResult)
             return result
