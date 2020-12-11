@@ -39,3 +39,11 @@ def read_strings(filename, deliminator = "", vertDeliminator =""):
                     nestedResult.append(line)
                 result.append(nestedResult)
             return result
+def nicePrintGrid(g):
+    for y in g:
+        row = ""
+        for x in y:
+            row += x
+        row += "\n"
+        print(row)
+    print("\n")
