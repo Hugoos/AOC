@@ -1,3 +1,5 @@
+import numpy as np
+
 def read_integers(filename):
     with open(filename) as f:
         return [int(x) for x in f]
@@ -20,7 +22,7 @@ def read_strings(filename, deliminator = "", vertDeliminator =""):
                         nestedResult = []
                         continue    
                     nestedResult.append(line)
-            result.append(nestedResult)        
+                result.append(nestedResult)        
             return result
     else:    
         with open(filename) as f:
@@ -47,3 +49,15 @@ def nicePrintGrid(g):
         row += "\n"
         print(row)
     print("\n")
+
+def convertDegree2Radians(degree):
+    return degree * (np.pi/180)
+
+def rotateXY(coords,theta, clockwise = True, degrees = True):
+    if clockwise:
+        theta = -theta
+    if degrees:
+        theta = convertDegree2Radians(theta)
+    r = np.array(( (np.cos(theta), -np.sin(theta)),
+               (np.sin(theta),  np.cos(theta)) ))
+    return r.dot(coords)
