@@ -10,7 +10,6 @@ def read_strings(filename, deliminator = "", vertDeliminator =""):
             for line in f:
                 result.append([str(x).strip() for x in line.split(deliminator)])
             if vertDeliminator or vertDeliminator.isspace():
-                print("hello")
                 if vertDeliminator.isspace():
                     vertDeliminator = ""
                 result2 = result
