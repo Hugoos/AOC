@@ -8,32 +8,37 @@ import random
 import threading
 
 #import Astar
-name2 = "input/input21.txt"
+name2 = "input/input23.txt"
 mailbox = {i:[] for i in range(50)}
 mailbox[255] = []
-print(mailbox)
+#print(mailbox)
 
 mutex = threading.Lock()
 mutexprint = threading.Lock()
 def worker(machine, address):
-    print(machine.inputList)
+    #print(machine.inputList)
     while True:
         mutex.acquire()
         inp = mailbox[address]
+        mailbox[address] = []
+        #print(mailbox[address])
         if mailbox[255]:
             break
         mutex.release()
         if inp:
-            machine.setInput(inp)
+            for inp2 in inp:
+                #print(inp2)
+                machine.setInput(inp2)
         else:
             machine.setInput([-1])
         desadd = next(machine.run())
         if desadd == 2:
-            print("missing input")
+            #print("missing input")
+            continue
         x = next(machine.run())
         y = next(machine.run())
         mutexprint.acquire()
-        print(desadd, x , y)
+        #print(desadd, x , y)
         if desadd == 1 or x == 1 or y == 1:
             print("finished apparently")
             break
@@ -74,7 +79,8 @@ data_orig = data.copy()
 
 threads = []
 for i in range(50):
-    machines = Machine(data=data.copy())
+    machines = Machine(data=data.copy(), inputListInit = [])
+    #print(machines.inputList)
     machines.setInput([i])
     t = threading.Thread(target=worker, args = [machines, i])
     threads.append(t)

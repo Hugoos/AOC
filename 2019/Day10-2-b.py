@@ -15,8 +15,27 @@ def distance(a,b):
 
 def angle(p1, p2):
     return math.atan2(p1[1] - p2[1], p1[0] - p2[0])
+#2*math.pi+
 
+def angle2(p1,p2):
+    angle2 = angle(p1,p2)
+    #print(angle2)
+    if angle2 < 0:
+        return(math.pi + abs(angle2))
+    else:
+        return angle2
 
+print(angle2((0,0),(0,1)))
+print(angle2((0,0),(1,1)))
+print(angle2((0,0),(1,0)))
+print(angle2((0,0),(1,-1)))
+
+print(angle2((0,0),(0,-1)))
+print(angle2((0,0),(-1,-1)))
+print(angle2((0,0),(-1,0)))
+print(angle2((0,0),(-1,1)))
+#if 2*math.pi+angle((0,0),(-1,1)) > 2*math.pi+angle((0,0),(0,1)):
+#    print(angle((0,0),(1,0)) + 2*math.pi+angle((0,0),(-1,1)) - 2*math.pi+angle((0,0),(0,1)))
 #lines = """.#..#
 #.....
 #####
@@ -42,3 +61,8 @@ for asteroid in coordList:
 
 print(max([len(set(angleList)) for angleList in angleDict.values()]))
             
+asteroid = [key for key in angleDict if len(set(angleDict[key])) == 221][0]
+print(asteroid)
+
+
+

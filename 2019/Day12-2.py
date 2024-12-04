@@ -91,5 +91,3 @@ print(totalEnergyList)
 print(sum(totalEnergyList))
 print("----")
 print("lcm is " + str(lcm(lcm(ansDict["x"],ansDict["y"]), ansDict["z"])))
-        
-    

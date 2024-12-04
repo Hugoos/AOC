@@ -92,5 +92,3 @@ totalEnergyList = [planet.totalEnergy() for planet in planetList]
 
 print(totalEnergyList)
 print(sum(totalEnergyList))
-        
-    
