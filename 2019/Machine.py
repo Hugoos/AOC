@@ -1,6 +1,7 @@
 import math
 import csv
 import unittest
+import traceback
 from itertools import permutations 
 name2 = "input/input9.txt" #pentest
 
@@ -25,6 +26,10 @@ class Machine:
         self.lastOutput = None
         self.debug = False
 
+    def setMemory(self, location, value):
+        self.data_orig[location] = value
+        self.data[location] = value
+
     def resetData(self):
         self.data = self.data_orig.copy()
         self.pointer = 0
@@ -38,6 +43,13 @@ class Machine:
         if ind >= len(self.data):
             #print("extending memory by " + str(self.pointer+i+1 - len(self.data) + 10))
             self.data = self.data + [0]*(ind - len(self.data) + 10)
+
+    def setInput(self,inputList=[]):
+        if inputList:
+            #maybe List errors
+            for inp in inputList:
+                self.inputList.append(inp)
+        
 
     def run(self, inputList=[], debug = False):
         self.debug = debug
@@ -83,10 +95,11 @@ class Machine:
                         self.extendMemory(self.relbase + self.data[self.pointer+1])
                         index3 = self.relbase + self.data[self.pointer+1]
                     if len(self.inputList) == 0:
-                        yield outputList
-                    if len(self.inputList) == 0:
-                        print("Missing input")
+                        #print("Missing input")
+                        yield 2
+                        
                     self.data[index3] = self.inputList.pop(0)
+                    #print(self.data[index3])
                     self.pointer += 2
                 elif opcode == 4:
                     if debug: print("op4")
@@ -145,6 +158,7 @@ class Machine:
                     return -1
             except Exception as e:
                 print(e)
+                print(traceback.format_exc())
                 yield -1
         self.resetData()
         yield 1

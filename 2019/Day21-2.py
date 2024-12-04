@@ -1,0 +1,132 @@
+import math
+from Machine import Machine
+from collections import namedtuple
+import csv
+import numpy as np
+from PIL import Image
+import random
+#import Astar
+name2 = "input/input21.txt"
+
+def printMap(robotMap):
+    for s in robotMap:
+        print(*s)
+
+Coordinate = namedtuple("Coordinate", 'x y')
+DX = {'L': -1, 'R': 1, 'U': 0, 'D': 0}
+DY = {'L': 0, 'R': 0, 'U': -1, 'D': 1}
+movementCommand = {'L': 3, 'R': 4, 'U': 1, 'D': 2}
+directionList = ["U","R","D","L"]
+robotMap = ""
+#robotMap.append([])
+
+with open(name2, 'r') as f:
+    reader = csv.reader(f)
+    data = list(reader)
+
+data = data[0]
+data = list(map(int, data))
+data_orig = data.copy()
+
+state = np.zeros((21,42))
+machine = Machine(data=data.copy())
+#machine.setMemory(0,2)
+
+input_instructions = [",".join([str(x) for x in [ord('N'), ord('O'), ord('T'), ord(' '), ord('A'), ord(' '), ord('J'), ord('\n')]]),
+                      
+                      ",".join([str(x) for x in [ord('N'), ord('O'), ord('T'), ord(' '), ord('C'), ord(' '), ord('T'), ord('\n')]]),
+                      ",".join([str(x) for x in [ord('A'), ord('N'), ord('D'), ord(' '), ord('H'), ord(' '), ord('T'), ord('\n')]]),
+                      ",".join([str(x) for x in [ord('O'), ord('R'), ord(' '), ord('T'), ord(' '), ord('J'), ord('\n')]]),
+                      
+                      ",".join([str(x) for x in [ord('N'), ord('O'), ord('T'), ord(' '), ord('B'), ord(' '), ord('T'), ord('\n')]]),
+                      ",".join([str(x) for x in [ord('A'), ord('N'), ord('D'), ord(' '), ord('A'), ord(' '), ord('T'), ord('\n')]]),
+                      ",".join([str(x) for x in [ord('A'), ord('N'), ord('D'), ord(' '), ord('C'), ord(' '), ord('T'), ord('\n')]]),
+                      ",".join([str(x) for x in [ord('O'), ord('R'), ord(' '), ord('T'), ord(' '), ord('J'), ord('\n')]]),
+
+                      ",".join([str(x) for x in [ord('A'), ord('N'), ord('D'), ord(' '), ord('D'), ord(' '), ord('J'), ord('\n')]]),
+                      
+                      ",".join([str(x) for x in [ord('R'), ord('U'), ord('N'), ord('\n')]])]
+inputList = []
+print(input_instructions)
+for i,line in enumerate(input_instructions):
+    inputList.append([])
+    for char in line.split(","):
+        inputList[i].append(int(char))
+print(inputList)
+#machine.setInput(inputList)
+index = 0
+indexInput = 0
+for instruction in inputList:
+    machine.setInput(instruction)
+while True:
+    outp = next(machine.run())
+    #print(outp)
+    if outp == 1:
+        print("finished")
+        print(robotMap)
+        print(lastoutput)
+        break
+    if outp == 2:
+        print("asking input")
+        printMap(robotMap)
+        #machine.setInput(inputList[indexInput])
+        indexInput += 1
+        continue
+    print(outp)
+    robotMap = robotMap + chr(outp[0])
+    lastoutput = outp
+
+    
+#robotMap.pop()
+#robotMap.pop()
+#print(robotMap)
+coordList = []
+#for y in range(len(robotMap)-2):
+#    y = y+1
+#    #print(y)
+#    for x in range(len(robotMap[y])-2):
+#        x = x+1
+#        #print(x)
+#        #try:
+#        if robotMap[y][x] == "#" and robotMap[y+1][x] == "#" and robotMap[y-1][x] == "#" and robotMap[y][x+1] == "#" and robotMap[y][x-1] == "#":
+#            coordList.append((x,y))
+#        #except:
+#        #    continue
+#summetje = 0
+#for coord in coordList:
+#    summetje += coord[0] * coord[1]
+#print(summetje)
+
+
+
+
+pattern = ["L10","R12","R12","R6","R10","L10","L10","R12","R12","R10","L10","L12","R6","R6","R10","R12","R10","L10","L12","R6","R6","R10","L10","R10","L10","L12","R6","L10","R12","R12","R10","L10","L12","R6"]
+
+def get_pattern(seq):
+    seq2=seq
+    outs={}
+    l=0
+    r=0
+    c=None
+    for end in range(len(seq2)+1):
+        for start in range(end):
+            word=chr(1).join(seq2[start:end])
+            if not word in outs:
+                outs[word]=1
+            else:
+                outs[word]+=1
+    for item in outs:
+        if outs[item]>r or (len(item)>l and outs[item]>1):
+            l=len(item)
+            r=outs[item]
+            c=item
+    return c.split(chr(1))
+#print(get_pattern(pattern))
+
+#im = Image.fromarray(maze.astype('uint8')*100)
+#im.save("maze" + ".png")
+
+
+
+    
+

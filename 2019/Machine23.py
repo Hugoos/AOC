@@ -1,7 +1,8 @@
 import math
 import csv
 import unittest
-from itertools import permutations 
+from itertools import permutations
+import traceback
 name2 = "input/input9.txt" #pentest
 
 with open(name2, 'r') as f:
@@ -14,9 +15,9 @@ data_orig = data.copy()
 
 
 class Machine:
-    def __init__(self, data, inputList=[]):
+    def __init__(self, data, inputListInit=[]):
         self.data = data
-        self.inputList = inputList
+        self.inputList = inputListInit
         self.pointer = 0
         self.data_orig = data.copy()
         self.running = False
@@ -43,20 +44,21 @@ class Machine:
             #print("extending memory by " + str(self.pointer+i+1 - len(self.data) + 10))
             self.data = self.data + [0]*(ind - len(self.data) + 10)
 
-    def setInput(self,inputList=[]):
-        if inputList:
+    def setInput(self,inputListSet=[]):
+        #print(inputListSet)
+        if inputListSet:
             #maybe List errors
-            for inp in inputList:
+            for inp in inputListSet:
                 self.inputList.append(inp)
         
 
-    def run(self, inputList=[], debug = False):
+    def run(self, inputListRun=[], debug = False):
         self.debug = debug
         self.running = True
         #print("pointer: " + str(self.pointer))
-        if inputList:
+        if inputListRun:
             #maybe List errors
-            for inp in inputList:
+            for inp in inputListRun:
                 self.inputList.append(inp)
         pointer_move = 0
         loop = True
@@ -79,6 +81,7 @@ class Machine:
                         print("error")
                     if debug: print("op12")
                     valList = self.getvalList(parList=[[par1,0],[par2,0],[par3,1]])
+                    #print(valList[1])
                     self.data[valList[2]] = eval(str(valList[0])+operation+str(valList[1]))
                     self.pointer += 4
                 elif opcode == 3:
@@ -157,6 +160,7 @@ class Machine:
                     return -1
             except Exception as e:
                 print(e)
+                print(traceback.format_exc())
                 yield -1
         self.resetData()
         yield 1
@@ -197,6 +201,12 @@ class Machine:
         return self.iterations
     def getLastOutput(self):
         return self.lastOutput
+
+    def isIdle(self):
+        if self.inputList == [-1]:
+            return 1
+        else:
+            return 0
         
 class TestMachineMethods(unittest.TestCase):
 
@@ -204,7 +214,7 @@ class TestMachineMethods(unittest.TestCase):
         #print("starting")
         m1 = Machine(data=[3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,
 1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,
-999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99], inputList = [7])
+999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99], inputListInit = [7])
         self.assertEqual(next(m1.run()), [999])
         for x in m1.run():
             continue
@@ -221,72 +231,72 @@ class TestMachineMethods(unittest.TestCase):
 
     def test_positionMode1(self):
         #test_data = [3,9,8,9,10,9,4,9,99,-1,8]
-        m1 = Machine(data=[3,9,8,9,10,9,4,9,99,-1,8], inputList=[8])
+        m1 = Machine(data=[3,9,8,9,10,9,4,9,99,-1,8], inputListInit=[8])
         self.assertEqual(next(m1.run()), [1])
         
     def test_positionMode2(self):
         #test_data = [3,9,8,9,10,9,4,9,99,-1,8]
-        m1 = Machine(data=[3,9,8,9,10,9,4,9,99,-1,8], inputList=[100])
+        m1 = Machine(data=[3,9,8,9,10,9,4,9,99,-1,8], inputListInit=[100])
         self.assertEqual(next(m1.run()), [0])
         #self.assertEqual(runMachine(data=[3,9,8,9,10,9,4,9,99,-1,8],inputList=[100]), [0])
 
     def test_positionMode3(self):
         #test_data = [3,9,7,9,10,9,4,9,99,-1,8]
-        m1 = Machine(data=[3,9,7,9,10,9,4,9,99,-1,8], inputList=[7])
+        m1 = Machine(data=[3,9,7,9,10,9,4,9,99,-1,8], inputListInit=[7])
         self.assertEqual(next(m1.run()), [1])
         #self.assertEqual(runMachine(data=[3,9,7,9,10,9,4,9,99,-1,8],inputList=[7]), [1])
         
     def test_positionMode4(self):
         #test_data = [3,9,7,9,10,9,4,9,99,-1,8]
-        m1 = Machine(data=[3,9,7,9,10,9,4,9,99,-1,8], inputList=[8])
+        m1 = Machine(data=[3,9,7,9,10,9,4,9,99,-1,8], inputListInit=[8])
         self.assertEqual(next(m1.run()), [0])
         #self.assertEqual(runMachine(data=[3,9,7,9,10,9,4,9,99,-1,8],inputList=[8]), [0])
         
     def test_immediateMode1(self):
         #test_data = [3,9,8,9,10,9,4,9,99,-1,8]
-        m1 = Machine(data=[3,3,1108,-1,8,3,4,3,99], inputList=[8])
+        m1 = Machine(data=[3,3,1108,-1,8,3,4,3,99], inputListInit=[8])
         self.assertEqual(next(m1.run()), [1])
         #self.assertEqual(runMachine(data=[3,3,1108,-1,8,3,4,3,99],inputList=[8]), [1])
         
     def test_immediatMode2(self):
         #test_data = [3,9,8,9,10,9,4,9,99,-1,8]
-        m1 = Machine(data=[3,3,1108,-1,8,3,4,3,99], inputList=[100])
+        m1 = Machine(data=[3,3,1108,-1,8,3,4,3,99], inputListInit=[100])
         self.assertEqual(next(m1.run()), [0])
         #self.assertEqual(runMachine(data=[3,3,1108,-1,8,3,4,3,99],inputList=[100]), [0])
 
     def test_immediatMode3(self):
         #test_data = [3,9,7,9,10,9,4,9,99,-1,8]
-        m1 = Machine(data=[3,3,1107,-1,8,3,4,3,99], inputList=[7])
+        m1 = Machine(data=[3,3,1107,-1,8,3,4,3,99], inputListInit=[7])
         self.assertEqual(next(m1.run()), [1])
         #self.assertEqual(runMachine(data=[3,3,1107,-1,8,3,4,3,99],inputList=[7]), [1])
         
     def test_immediatMode4(self):
         #test_data = [3,9,7,9,10,9,4,9,99,-1,8]
-        m1 = Machine(data=[3,3,1107,-1,8,3,4,3,99], inputList=[8])
+        m1 = Machine(data=[3,3,1107,-1,8,3,4,3,99], inputListInit=[8])
         self.assertEqual(next(m1.run()), [0])
         #self.assertEqual(runMachine(data=[3,3,1107,-1,8,3,4,3,99],inputList=[8]), [0])
         
     def test_positionJump1(self):
         #test_data = [3,9,8,9,10,9,4,9,99,-1,8]
-        m1 = Machine(data=[3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9], inputList=[0])
+        m1 = Machine(data=[3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9], inputListInit=[0])
         self.assertEqual(next(m1.run()), [0])
         #self.assertEqual(runMachine(data=[3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9],inputList=[0]), [0])
         
     def test_positionJump2(self):
         #test_data = [3,9,8,9,10,9,4,9,99,-1,8]
-        m1 = Machine(data=[3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9], inputList=[100])
+        m1 = Machine(data=[3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9], inputListInit=[100])
         self.assertEqual(next(m1.run()), [1])
         #self.assertEqual(runMachine(data=[3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9],inputList=[100]), [1])
 
     def test_immediatJump1(self):
         #test_data = [3,9,7,9,10,9,4,9,99,-1,8]
-        m1 = Machine(data=[3,3,1105,-1,9,1101,0,0,12,4,12,99,1], inputList=[0])
+        m1 = Machine(data=[3,3,1105,-1,9,1101,0,0,12,4,12,99,1], inputListInit=[0])
         self.assertEqual(next(m1.run()), [0])
         #self.assertEqual(runMachine(data=[3,3,1105,-1,9,1101,0,0,12,4,12,99,1],inputList=[0]), [0])
         
     def test_immediatJump2(self):
         #test_data = [3,9,7,9,10,9,4,9,99,-1,8]
-        m1 = Machine(data=[3,3,1105,-1,9,1101,0,0,12,4,12,99,1], inputList=[100])
+        m1 = Machine(data=[3,3,1105,-1,9,1101,0,0,12,4,12,99,1], inputListInit=[100])
         self.assertEqual(next(m1.run()), [1])
         #self.assertEqual(runMachine(data=[3,3,1105,-1,9,1101,0,0,12,4,12,99,1],inputList=[100]), [1])
 
