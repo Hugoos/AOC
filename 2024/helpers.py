@@ -54,6 +54,27 @@ class grid:
         #im = Image.fromarray(self.grid).convert('1')
         im.save(f"{name}.png")
 
+def visualize_dict_grid(coordinate_dict):
+    """
+    Visualizes a dictionary with (x, y) coordinates as keys and values as the grid content.
+
+    :param coordinate_dict: Dictionary with keys as (x, y) tuples and values as grid values.
+    """
+    # Find the maximum x and y to determine grid dimensions
+    max_x = max(key[0] for key in coordinate_dict.keys())
+    max_y = max(key[1] for key in coordinate_dict.keys())
+    
+    # Create the grid
+    grid = [[" " for _ in range(max_x + 1)] for _ in range(max_y + 1)]
+    
+    # Populate the grid with values from the dictionary
+    for (x, y), value in coordinate_dict.items():
+        grid[y][x] = str(value)  # Convert values to strings for uniform display
+
+    # Print the grid
+    for row in grid:
+        print(" ".join(row))
+
 def delete_multiple_element(list_object, indices):
     indices = sorted(indices, reverse=True)
     for idx in indices:
