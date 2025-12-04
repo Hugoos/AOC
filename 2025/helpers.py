@@ -11,6 +11,27 @@ def npNicePrint(arr, convertDict=None):
         s += "\n"
     print(s)
 
+def dictNicePrint(d, convertDict=None):
+    # d is something like {(x, y): value, ...}
+    if not convertDict:
+        convertDict = {0: ".", 1: "#"}
+
+    # find bounds
+    xs = [pos[0] for pos in d.keys()]
+    ys = [pos[1] for pos in d.keys()]
+    min_x, max_x = min(xs), max(xs)
+    min_y, max_y = min(ys), max(ys)
+
+    out = []
+    for y in range(min_y, max_y + 1):
+        row = []
+        for x in range(min_x, max_x + 1):
+            v = d.get((x, y), 0)
+            row.append(convertDict.get(v, v))
+        out.append("".join(row))
+
+    print("\n".join(out))
+
 class grid:
     def __init__(self, size):
         self.size = size
